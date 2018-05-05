@@ -15,7 +15,7 @@ import re
 
 # default config
 CONFIG = {
-    'url': 'http://localhost/status?json&full'
+    'Url': 'http://localhost/status?json&full'
 }
 
 # gauge: store as is
@@ -32,7 +32,7 @@ TYPES = {
     'max active processes': 'gauge',
     'max children reached': 'gauge',
     'slow requests': 'derive',
-    'requests': 'gauge',
+    'requests': 'derive',
     'request duration': 'gauge',
     'content length': 'gauge',
     'last request cpu': 'gauge',
@@ -48,23 +48,23 @@ def configure_callback(conf):
 
 
 def dispatch(pool, metric, value, metric_type, process=None):
-    if process is None:
-        plugin = 'fcm.{}.{}'.format(pool, metric)
-    else:
-        plugin = 'fcm.{}.process{}.{}'.format(pool, process, metric)
-    plugin = plugin.replace(' ', '_')
+    instance = pool
+    if process is not None:
+        instance += '.process-{}'.format(process)
+    metric = metric.replace(' ', '_')
 
     if COLLECTD_ENABLED:
-        vl = collectd.Values(plugin=plugin, type=metric_type)
+        vl = collectd.Values(plugin='phpfpm', plugin_instance=instance,
+                             type=metric_type, type_instance=metric)
         vl.dispatch(values=[value])
     else:
-        print 'dispatch: {} type: {} value: {}'.format(
-            plugin, metric_type, value)
+        print 'dispatch: phpfpm.{}.{}.{} value: {}'.format(
+            instance, metric_type, metric, value)
 
 
 def read_callback():
     global CONFIG
-    url = CONFIG['url']
+    url = CONFIG['Url']
     response = urllib.urlopen(url)
     data = json.loads(response.read())
 
@@ -89,11 +89,10 @@ if COLLECTD_ENABLED:
 
 if __name__ == "__main__" and not COLLECTD_ENABLED:
     from pprint import pprint as pp
-    CONFIG['url'] = sys.argv[1]
-
     print "Running in test mode, invoke with"
     print sys.argv[0] + " URL"
 
+    CONFIG['Url'] = sys.argv[1]
     print "\n\nCONFIG:"
     pp(CONFIG)
     print
