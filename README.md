@@ -1,6 +1,6 @@
 # collectd-python-php-fpm-status
 
-PHP-FPM status monitor for collectd
+PHP-FPM status monitor plugin for collectd, written in python
 
 ## INSTALLATION
 
