@@ -4,9 +4,10 @@ PHP-FPM status monitor plugin for collectd, written in python
 
 ## INSTALLATION
 
-1.  Place `phpfpm.py` in your CollectD python plugins directory, for example `/usr/local/lib/collectd/python/`
-2.  Configure the plugin in CollectD (see below)
-3.  Restart CollectD
+1.  First edit the fpm pool configuration to enable the status page, for example in Debian/Ubuntu: `/etc/php/7.1/fpm/pool.d/my_pool.conf`
+2.  Place `phpfpm.py` in your CollectD python plugins directory, for example `/usr/local/lib/collectd/python/`
+3.  Configure the plugin in CollectD (see below)
+4.  Restart CollectD
 
 ## COLLECTD CONFIGURATION
 
