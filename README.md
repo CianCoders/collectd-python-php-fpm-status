@@ -2,6 +2,12 @@
 
 PHP-FPM status monitor plugin for collectd, written in python
 
+## QUICK START
+
+This plugin can be used in standalone, simply run it and pass a valid PHP-FPM status page url to it:
+
+    $ ./phpfpm.py http://localhost/status?json&full
+
 ## INSTALLATION
 
 1.  First edit the fpm pool configuration to enable the status page, for example in Debian/Ubuntu: `/etc/php/7.1/fpm/pool.d/my_pool.conf`
