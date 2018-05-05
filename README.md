@@ -14,6 +14,7 @@ Edit your `/etc/collectd/collectd.conf` file, it should look like this:
 
     LoadPlugin python
     <Plugin python>
+        ModulePath "/usr/local/lib/collectd/python"
         Import "phpfpm"
         <Module phpfpm>
                 Url "http://127.0.0.2/pool1_status?json&full"
