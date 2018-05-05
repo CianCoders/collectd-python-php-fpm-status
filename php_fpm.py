@@ -14,9 +14,7 @@ except ImportError:
 import re
 
 # default config
-CONFIG = {
-    'Url': 'http://localhost/status?json&full'
-}
+URLS = []
 
 # gauge: store as is
 # derive: store the change over time
@@ -41,10 +39,14 @@ TYPES = {
 
 
 def configure_callback(conf):
-    global CONFIG
+    global URLS
     for node in conf.children:
-        if node.key in CONFIG:
-            CONFIG[node.key] = node.values[0]
+        key = node.key.lower()
+        value = node.values[0]
+        if key == 'url':
+            URLS.append(value)
+        else:
+            collectd.warning('phpfpm plugin: Unknown config key: %s.' % key)
 
 
 def dispatch(pool, metric, value, metric_type, process=None):
@@ -63,24 +65,24 @@ def dispatch(pool, metric, value, metric_type, process=None):
 
 
 def read_callback():
-    global CONFIG
-    url = CONFIG['Url']
-    response = urllib.urlopen(url)
-    data = json.loads(response.read())
+    global URLS
+    for url in URLS:
+        response = urllib.urlopen(url)
+        data = json.loads(response.read())
 
-    # read master metrics
-    pool = data['pool']
-    for metric in [m for m in data.keys() if m in TYPES]:
-        dispatch(pool, metric, data[metric], TYPES[metric])
+        # read master metrics
+        pool = data['pool']
+        for metric in [m for m in data.keys() if m in TYPES]:
+            dispatch(pool, metric, data[metric], TYPES[metric])
 
-    # read each prcess metrics
-    if 'processes' in data.keys():
-        i = 0
-        for process in data['processes']:
-            for metric in [m for m in process.keys() if m in TYPES]:
-                dispatch(pool, metric,
-                         process[metric], TYPES[metric], process=i)
-            i += 1
+        # read each prcess metrics
+        if 'processes' in data.keys():
+            i = 0
+            for process in data['processes']:
+                for metric in [m for m in process.keys() if m in TYPES]:
+                    dispatch(pool, metric,
+                             process[metric], TYPES[metric], process=i)
+                i += 1
 
 
 if COLLECTD_ENABLED:
@@ -92,9 +94,9 @@ if __name__ == "__main__" and not COLLECTD_ENABLED:
     print "Running in test mode, invoke with"
     print sys.argv[0] + " URL"
 
-    CONFIG['Url'] = sys.argv[1]
-    print "\n\nCONFIG:"
-    pp(CONFIG)
+    URLS.append(sys.argv[1])
+    print "\n\nURLS:"
+    pp(URLS)
     print
 
     read_callback()
