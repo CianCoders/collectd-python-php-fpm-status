@@ -34,7 +34,7 @@ Don't forget to add the `?json&full` query params, they are essential for this p
 
 The data is collected using the format:
 
-`phpfpm.pool.gauge.metric` for the master process, and
-`phpfpm.pool.process-N.gauge.metric` for each child process
+`phpfpm.pool-gauge-metric` for the master process, and
+`phpfpm.pool-process-N.gauge-metric` for each child process
 
 ## Enjoy!
