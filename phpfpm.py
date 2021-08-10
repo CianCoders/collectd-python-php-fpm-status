@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
-import urllib
+import urllib.request
 import json
 
 COLLECTD_ENABLED = True
@@ -60,14 +60,14 @@ def dispatch(pool, metric, value, metric_type, process=None):
                              type=metric_type, type_instance=metric)
         vl.dispatch(values=[value])
     else:
-        print 'dispatch: phpfpm.{}.{}.{} value: {}'.format(
-            instance, metric_type, metric, value)
+        print('dispatch: phpfpm.{}.{}.{} value: {}'.format(
+            instance, metric_type, metric, value))
 
 
 def read_callback():
     global URLS
     for url in URLS:
-        response = urllib.urlopen(url)
+        response = urllib.request.urlopen(url)
         data = json.loads(response.read())
 
         # read master metrics
@@ -91,11 +91,11 @@ if COLLECTD_ENABLED:
 
 if __name__ == "__main__" and not COLLECTD_ENABLED:
     from pprint import pprint as pp
-    print "Running in test mode, invoke with"
-    print sys.argv[0] + " URL"
+    print("Running in test mode, invoke with")
+    print(sys.argv[0] + " URL")
 
     URLS.append(sys.argv[1])
-    print "\n\nURLS:"
+    print("\n\nURLS:")
     pp(URLS)
     print
 
